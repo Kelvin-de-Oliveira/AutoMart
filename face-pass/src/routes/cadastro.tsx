@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Eye, EyeOff } from "lucide-react";
 import { PhoneFrame, StepIndicator } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { registrationStore } from "@/lib/registration-store";
@@ -50,6 +50,8 @@ function CadastroScreen() {
   });
   const [aceitou, setAceitou] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmar, setShowConfirmar] = useState(false);
 
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
   const touch = (k: string) => setTouched((t) => ({ ...t, [k]: true }));
@@ -118,7 +120,25 @@ function CadastroScreen() {
           <Input label="Telefone" value={form.telefone} onChange={(v) => set("telefone")(maskPhone(v))} placeholder="(00) 00000-0000" inputMode="tel" onBlur={() => touch("telefone")} error={touched.telefone ? errors.telefone : ""} />
 
           <div>
-            <Input label="Senha" type="password" value={form.senha} onChange={set("senha")} placeholder="Mínimo 8 caracteres" onBlur={() => touch("senha")} error={touched.senha ? errors.senha : ""} />
+            <Input
+              label="Senha"
+              type={showSenha ? "text" : "password"}
+              value={form.senha}
+              onChange={set("senha")}
+              placeholder="Mínimo 8 caracteres"
+              onBlur={() => touch("senha")}
+              error={touched.senha ? errors.senha : ""}
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => setShowSenha((s) => !s)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label={showSenha ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
+            />
             {form.senha && (
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex flex-1 gap-1">
@@ -131,9 +151,39 @@ function CadastroScreen() {
             )}
           </div>
 
-          <Input label="Confirmar senha" type="password" value={form.confirmar} onChange={set("confirmar")} placeholder="Repita sua senha" onBlur={() => touch("confirmar")} error={touched.confirmar ? errors.confirmar : ""} />
+          <Input
+            label="Confirmar senha"
+            type={showConfirmar ? "text" : "password"}
+            value={form.confirmar}
+            onChange={set("confirmar")}
+            placeholder="Repita sua senha"
+            onBlur={() => touch("confirmar")}
+            error={touched.confirmar ? errors.confirmar : ""}
+            trailing={
+              <button
+                type="button"
+                onClick={() => setShowConfirmar((s) => !s)}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label={showConfirmar ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showConfirmar ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            }
+          />
 
-          <label className="mt-2 flex cursor-pointer items-start gap-3 rounded-2xl bg-secondary/60 p-3.5">
+          <div
+            role="checkbox"
+            aria-checked={aceitou}
+            tabIndex={0}
+            onClick={() => setAceitou((v) => !v)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setAceitou((v) => !v);
+              }
+            }}
+            className="mt-2 flex cursor-pointer items-start gap-3 rounded-2xl bg-secondary/60 p-3.5"
+          >
             <span
               className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 transition-colors ${
                 aceitou ? "border-primary bg-primary text-primary-foreground" : "border-input bg-background"
@@ -141,13 +191,24 @@ function CadastroScreen() {
             >
               {aceitou && <Check size={14} strokeWidth={3} />}
             </span>
-            <input type="checkbox" className="sr-only" checked={aceitou} onChange={(e) => setAceitou(e.target.checked)} />
             <span className="text-xs leading-relaxed text-muted-foreground">
               Li e aceito os{" "}
-              <a className="font-medium text-primary underline">Termos de Uso</a> e a{" "}
-              <a className="font-medium text-primary underline">Política de Privacidade</a>.
+              <a
+                className="font-medium text-primary underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Termos de Uso
+              </a>{" "}
+              e a{" "}
+              <a
+                className="font-medium text-primary underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Política de Privacidade
+              </a>
+              .
             </span>
-          </label>
+          </div>
 
           <Button type="submit" disabled={!valid} size="lg" className="mt-3 h-12 rounded-2xl text-base font-semibold">
             Continuar
@@ -163,24 +224,31 @@ function Input({
   error,
   value,
   onChange,
+  trailing,
   ...rest
 }: {
   label: string;
   error?: string;
   value: string;
   onChange: (v: string) => void;
+  trailing?: React.ReactNode;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-sm font-medium text-foreground">{label}</span>
-      <input
-        {...rest}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`h-12 rounded-2xl border bg-card px-4 text-[15px] outline-none transition-colors placeholder:text-muted-foreground/70 focus:ring-2 focus:ring-primary/15 ${
-          error ? "border-destructive focus:border-destructive" : "border-input focus:border-primary"
+      <div
+        className={`flex h-12 items-center gap-2 rounded-2xl border bg-card px-4 transition-colors focus-within:ring-2 focus-within:ring-primary/15 ${
+          error ? "border-destructive focus-within:border-destructive" : "border-input focus-within:border-primary"
         }`}
-      />
+      >
+        <input
+          {...rest}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground/70"
+        />
+        {trailing}
+      </div>
       {error && <span className="text-xs font-medium text-destructive">{error}</span>}
     </label>
   );
