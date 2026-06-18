@@ -234,7 +234,7 @@ function StandbyScreen({ onStart }: { onStart: () => void }) {
   const banner = BANNERS[bannerIdx];
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-between px-8 py-10">
+    <div className="relative flex h-screen flex-col items-center justify-between overflow-hidden px-8 py-8">
       <Button
         onClick={onStart}
         variant="outline"
@@ -244,7 +244,7 @@ function StandbyScreen({ onStart }: { onStart: () => void }) {
         <ScanLine className="h-4 w-4" /> Simular leitura
       </Button>
 
-      <div className="mt-12 flex flex-col items-center">
+      <div className="mt-8 flex flex-col items-center">
         <div
           className="grid h-24 w-24 place-items-center rounded-3xl text-primary-foreground shadow-[var(--shadow-elegant)]"
           style={{ background: "var(--gradient-brand)" }}
@@ -336,7 +336,7 @@ function CartScreen({
   const [confirmCancel, setConfirmCancel] = useState(false);
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-[1400px] flex-col px-8 py-6">
+    <div className="relative mx-auto flex h-screen max-w-[1400px] flex-col overflow-hidden px-8 py-6">
       <header className="flex items-center justify-between border-b border-border pb-5">
         <Logo />
         <div className="rounded-full bg-secondary px-5 py-2 text-sm font-semibold text-secondary-foreground">
@@ -344,9 +344,9 @@ function CartScreen({
         </div>
       </header>
 
-      <div className="mt-6 grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_400px]">
+      <div className="mt-6 grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_400px]">
         {/* Items */}
-        <div className="flex flex-col">
+        <div className="flex min-h-0 flex-col">
           <h2 className="text-2xl font-bold tracking-tight">Seus produtos</h2>
           <div className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
             {cart.length === 0 ? (
@@ -560,7 +560,7 @@ function MethodScreen({
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col px-8 py-6">
+    <div className="mx-auto flex h-screen max-w-[1400px] flex-col overflow-hidden px-8 py-6">
       <header className="flex items-center justify-between">
         <Button
           onClick={onBack}
@@ -572,7 +572,7 @@ function MethodScreen({
         <Logo />
       </header>
 
-      <div className="mt-16 flex flex-col items-center text-center">
+      <div className="mt-10 flex flex-col items-center text-center">
         <h1 className="text-5xl font-extrabold tracking-tight">
           Como deseja pagar?
         </h1>
@@ -590,7 +590,7 @@ function MethodScreen({
         </div>
       </div>
 
-      <div className="mx-auto mt-14 grid w-full max-w-5xl gap-6 md:grid-cols-3">
+      <div className="mx-auto mt-10 grid w-full max-w-5xl gap-6 md:grid-cols-3">
         {methods.map(({ id, name, helper, Icon }) => (
           <button
             type="button"
@@ -714,20 +714,20 @@ function AwaitingScreen({
   const cardTypeLabel = cardType === "credito" ? "crédito" : "débito";
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1100px] flex-col px-8 py-6">
+    <div className="mx-auto flex h-screen max-w-[1100px] flex-col overflow-hidden px-8 py-6">
       <header className="flex items-center justify-between">
         <Logo />
       </header>
 
-      <div className="mt-10 flex flex-1 flex-col items-center text-center">
+      <div className="mt-6 flex flex-1 flex-col items-center justify-center text-center">
         <span className="rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
           Aguardando pagamento
         </span>
-        <div className="mt-5 text-7xl font-extrabold tracking-tight text-primary tabular-nums">
+        <div className="mt-4 text-6xl font-extrabold tracking-tight text-primary tabular-nums">
           {formatBRL(total)}
         </div>
 
-        <div className="mt-10 w-full max-w-2xl rounded-3xl border border-border bg-card p-10 shadow-[var(--shadow-card)]">
+        <div className="mt-6 w-full max-w-2xl rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
           {method === "cartao" && (
             <div className="flex flex-col items-center">
               <div className="scan-pulse grid h-32 w-32 place-items-center rounded-3xl bg-primary/10 text-primary">
@@ -749,13 +749,13 @@ function AwaitingScreen({
           {method === "pix" && (
             <div className="flex flex-col items-center">
               <FakeQrCode />
-              <h2 className="mt-6 text-3xl font-bold tracking-tight">
+              <h2 className="mt-4 text-2xl font-bold tracking-tight">
                 Escaneie o QR code com o app do seu banco
               </h2>
-              <p className="mt-2 text-base text-muted-foreground">
+              <p className="mt-1.5 text-base text-muted-foreground">
                 O pagamento será confirmado automaticamente.
               </p>
-              <div className="mt-6 rounded-xl bg-secondary px-5 py-2 text-sm font-semibold tabular-nums text-secondary-foreground">
+              <div className="mt-4 rounded-xl bg-secondary px-5 py-2 text-sm font-semibold tabular-nums text-secondary-foreground">
                 QR code expira em {mm}:{ss}
               </div>
             </div>
@@ -780,7 +780,7 @@ function AwaitingScreen({
           )}
         </div>
 
-        <div className="mt-8 flex w-full max-w-2xl flex-col gap-4">
+        <div className="mt-6 flex w-full max-w-2xl flex-col gap-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
               <span className="flex items-center gap-2">
@@ -849,12 +849,12 @@ function FakeQrCode() {
   };
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-inner ring-1 ring-border">
+    <div className="rounded-2xl bg-white p-4 shadow-inner ring-1 ring-border">
       <div
         className="grid"
         style={{
-          gridTemplateColumns: "repeat(21, 12px)",
-          gridTemplateRows: "repeat(21, 12px)",
+          gridTemplateColumns: "repeat(21, 9px)",
+          gridTemplateRows: "repeat(21, 9px)",
         }}
       >
         {Array.from({ length: 21 * 21 }).map((_, i) => {
@@ -869,7 +869,7 @@ function FakeQrCode() {
           return (
             <div
               key={i}
-              className={cn("h-3 w-3", on ? "bg-foreground" : "bg-white")}
+              className={cn("h-[9px] w-[9px]", on ? "bg-foreground" : "bg-white")}
             />
           );
         })}
@@ -945,7 +945,7 @@ function SuccessScreen({
   );
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-[1100px] flex-col items-center px-8 py-10">
+    <div className="relative mx-auto flex h-screen max-w-[1100px] flex-col items-center overflow-hidden px-8 py-8">
       {/* confetti */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {confetti.map((c, i) => (
@@ -970,54 +970,51 @@ function SuccessScreen({
         </div>
       </header>
 
-      <div className="relative z-10 mt-10 flex flex-col items-center text-center">
+      <div className="relative z-10 mt-6 flex flex-col items-center text-center">
         <div
-          className="check-pop grid h-32 w-32 place-items-center rounded-full text-white shadow-[0_20px_50px_-12px_oklch(0.65_0.18_145/0.55)]"
+          className="check-pop grid h-28 w-28 place-items-center rounded-full text-white shadow-[0_20px_50px_-12px_oklch(0.65_0.18_145/0.55)]"
           style={{ backgroundColor: "var(--success)" }}
         >
-          <Check className="h-16 w-16" strokeWidth={3} />
+          <Check className="h-14 w-14" strokeWidth={3} />
         </div>
-        <h1 className="mt-7 text-6xl font-extrabold tracking-tight">
+        <h1 className="mt-5 text-5xl font-extrabold tracking-tight">
           Pagamento aprovado!
         </h1>
-        <p className="mt-3 text-xl text-muted-foreground">
+        <p className="mt-2 text-xl text-muted-foreground">
           Obrigado pela sua compra. Volte sempre!
-        </p>
-        <p className="mt-3 text-xl font-extrabold tracking-tight">
-          A porta foi liberada!
         </p>
       </div>
 
-      <div className="relative z-10 mt-10 w-full max-w-xl rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-card)]">
-        <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Total pago
+      <div className="relative z-10 mt-6 grid w-full max-w-3xl grid-cols-[1fr_auto] gap-8 rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+        {/* Detalhes da compra */}
+        <div className="min-w-0">
+          <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Total pago
+          </div>
+          <div className="mt-1 text-5xl font-extrabold tracking-tight text-primary tabular-nums">
+            {formatBRL(total)}
+          </div>
+
+          <div className="my-4 border-t border-dashed border-border" />
+
+          <dl className="space-y-3 text-base">
+            <Row label="Forma de pagamento" value={methodLabel} />
+            <Row
+              label="Itens"
+              value={`${itemCount} ${itemCount === 1 ? "produto" : "produtos"}`}
+            />
+            <Row label="Data e hora" value={now} />
+          </dl>
         </div>
-        <div className="mt-1 text-5xl font-extrabold tracking-tight text-primary tabular-nums">
-          {formatBRL(total)}
-        </div>
 
-        <div className="my-6 border-t border-dashed border-border" />
-
-        <dl className="space-y-3 text-base">
-          <Row label="Forma de pagamento" value={methodLabel} />
-          <Row
-            label="Itens"
-            value={`${itemCount} ${itemCount === 1 ? "produto" : "produtos"}`}
-          />
-          <Row label="Data e hora" value={now} />
-        </dl>
-
-        <div className="my-6 border-t border-dashed border-border" />
-
-        <div className="flex items-center gap-5">
-          <div className="shrink-0 rounded-xl bg-white p-2 ring-1 ring-border">
+        {/* Nota fiscal */}
+        <div className="flex w-48 flex-col items-center justify-center border-l border-dashed border-border pl-8 text-center">
+          <div className="rounded-xl bg-white p-3 ring-1 ring-border">
             <MiniQr />
           </div>
-          <div>
-            <div className="text-sm font-semibold">Nota fiscal</div>
-            <div className="text-sm text-muted-foreground">
-              Escaneie para acessar sua nota fiscal
-            </div>
+          <div className="mt-3 text-sm font-semibold">Nota fiscal</div>
+          <div className="mt-0.5 text-xs text-muted-foreground">
+            Escaneie para acessar sua nota fiscal
           </div>
         </div>
       </div>
@@ -1025,7 +1022,7 @@ function SuccessScreen({
       <Button
         onClick={onDone}
         size="lg"
-        className="relative z-10 mt-8 h-16 w-full max-w-xl rounded-2xl text-lg font-bold shadow-[var(--shadow-elegant)]"
+        className="relative z-10 mt-6 h-16 w-full max-w-3xl rounded-2xl text-lg font-bold shadow-[var(--shadow-elegant)]"
         style={{ background: "var(--gradient-brand)" }}
       >
         Concluir
@@ -1048,14 +1045,14 @@ function MiniQr() {
     <div
       className="grid"
       style={{
-        gridTemplateColumns: "repeat(13, 6px)",
-        gridTemplateRows: "repeat(13, 6px)",
+        gridTemplateColumns: "repeat(13, 9px)",
+        gridTemplateRows: "repeat(13, 9px)",
       }}
     >
       {cells.map((on, i) => (
         <div
           key={i}
-          className={cn("h-1.5 w-1.5", on ? "bg-foreground" : "bg-white")}
+          className={cn("h-[9px] w-[9px]", on ? "bg-foreground" : "bg-white")}
         />
       ))}
     </div>
