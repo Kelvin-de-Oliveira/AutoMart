@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ScanFace, CheckCircle2, UserX, Store, RotateCw } from "lucide-react";
+import { ScanFace, CheckCircle2, UserX, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +37,8 @@ function KioskPage() {
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const nextOutcomeRef = useRef<"success" | "error">("success");
   const [now, setNow] = useState(() => new Date());
+
+  const isError = state === "error";
 
   // Clock tick
   useEffect(() => {
@@ -93,16 +95,10 @@ function KioskPage() {
     timersRef.current.push(
       setTimeout(() => {
         setState(outcome);
-        if (outcome === "success") {
-          timersRef.current.push(setTimeout(() => setState("idle"), 3000));
-        }
+        // Após qualquer resultado (sucesso ou falha), retorna ao estado inicial em 5s
+        timersRef.current.push(setTimeout(() => setState("idle"), 5000));
       }, 2000),
     );
-  };
-
-  const resetToIdle = () => {
-    clearTimers();
-    setState("idle");
   };
 
   const ringClass =
@@ -122,12 +118,12 @@ function KioskPage() {
   return (
     <main
       className={cn(
-        "relative min-h-screen w-full overflow-hidden transition-colors duration-700",
+        "relative flex h-screen w-full flex-col overflow-hidden transition-colors duration-700",
         bgTint,
       )}
     >
       {/* Top brand */}
-      <header className="flex items-center justify-center pt-10 pb-4">
+      <header className={cn("flex items-center justify-center pb-3", isError ? "pt-5" : "pt-10")}>
         <div className="flex items-center gap-2 text-[var(--kiosk-primary)]">
           <Store className="h-6 w-6" />
           <span className="text-lg font-semibold tracking-tight">FacePass · Entrada</span>
@@ -142,19 +138,25 @@ function KioskPage() {
       </div>
 
       {/* Center viewfinder */}
-      <section className="flex flex-col items-center px-8 pt-6">
-        <div className="relative">
+      <section className="flex min-h-0 flex-1 flex-col items-center justify-center px-8">
+        <div className="relative shrink-0">
           {/* Animated scanning sweep during recognizing */}
           {state === "recognizing" && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-              <div className="h-[22rem] w-[22rem] animate-spin rounded-full border-4 border-transparent border-t-[var(--kiosk-primary)] border-r-[var(--kiosk-primary)]/40 [animation-duration:1.4s]" />
+              <div
+                className={cn(
+                  "animate-spin rounded-full border-4 border-transparent border-t-[var(--kiosk-primary)] border-r-[var(--kiosk-primary)]/40 [animation-duration:1.4s]",
+                  isError ? "h-[16rem] w-[16rem]" : "h-[22rem] w-[22rem]",
+                )}
+              />
             </div>
           )}
 
           {/* Circular frame */}
           <div
             className={cn(
-              "relative h-[22rem] w-[22rem] overflow-hidden rounded-full bg-black/5 ring-8 ring-offset-4 ring-offset-transparent transition-all duration-500",
+              "relative overflow-hidden rounded-full bg-black/5 ring-8 ring-offset-4 ring-offset-transparent transition-all duration-500",
+              isError ? "h-[16rem] w-[16rem]" : "h-[22rem] w-[22rem]",
               ringClass,
               state === "idle" && "animate-pulse-soft",
             )}
@@ -192,7 +194,10 @@ function KioskPage() {
         {/* Status content */}
         <div
           key={state}
-          className="mt-12 flex w-full max-w-xl animate-fade-in flex-col items-center text-center"
+          className={cn(
+            "flex w-full max-w-xl shrink-0 animate-fade-in flex-col items-center text-center",
+            isError ? "mt-5" : "mt-12",
+          )}
         >
           {state === "idle" && (
             <>
@@ -233,23 +238,51 @@ function KioskPage() {
 
           {state === "error" && (
             <>
-              <div className="mb-4 flex items-center gap-3">
-                <UserX className="h-10 w-10 text-[var(--kiosk-error)]" />
+              <div className="mb-2 flex items-center gap-3">
+                <UserX className="h-9 w-9 text-[var(--kiosk-error)]" />
               </div>
-              <h1 className="text-4xl font-bold leading-tight text-[var(--kiosk-error)]">
+              <h1 className="text-3xl font-bold leading-tight text-[var(--kiosk-error)]">
                 Não foi possível reconhecer seu rosto
               </h1>
-              <p className="mt-3 text-lg text-[var(--kiosk-muted)]">
-                Tente novamente ou ajuste a posição do seu rosto. Se o problema persistir, procure
-                um colaborador.
+              <p className="mt-2 text-base text-[var(--kiosk-muted)]">
+                Tente novamente ou ajuste a posição do seu rosto.
               </p>
-              <Button
-                onClick={resetToIdle}
-                className="mt-8 h-14 rounded-full bg-[var(--kiosk-primary)] px-10 text-lg font-semibold text-white shadow-lg hover:bg-[var(--kiosk-primary)]/90"
-              >
-                <RotateCw className="mr-2 h-5 w-5" />
-                Tentar novamente
-              </Button>
+
+              {/* Card de orientações */}
+              <div className="mt-4 rounded-2xl border border-[var(--kiosk-error)]/20 bg-[var(--kiosk-error-bg)] px-6 py-4 text-sm text-[var(--kiosk-muted)]">
+                <p>
+                  Problema persistente? Acesse{" "}
+                  <a
+                    href="https://www.automart.com.br/suporte"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-[var(--kiosk-primary)] underline underline-offset-2"
+                  >
+                    automart.com.br/suporte
+                  </a>{" "}
+                  ou escreva para{" "}
+                  <a
+                    href="mailto:suporte@automart.com.br"
+                    className="font-semibold text-[var(--kiosk-primary)] underline underline-offset-2"
+                  >
+                    suporte@automart.com.br
+                  </a>
+                  .
+                </p>
+                <div className="my-2.5 h-px w-full bg-[var(--kiosk-error)]/15" />
+                <p>
+                  É seu primeiro acesso? Instale o aplicativo FacePass e realize seu cadastro em{" "}
+                  <a
+                    href="https://www.automart.com.br/app"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-[var(--kiosk-primary)] underline underline-offset-2"
+                  >
+                    automart.com.br/app
+                  </a>
+                  .
+                </p>
+              </div>
             </>
           )}
         </div>
